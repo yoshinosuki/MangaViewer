@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>全部图片浏览</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        /* 原有样式保持不变 */
+        body {
+            background: url("{{ url_for('static', filename='Background.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 85%;
+            margin: 0 auto;
+            padding: 20px 0;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.9);
+            min-width: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        img.thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+            border: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        img.thumbnail:hover {
+            transform: scale(1.03);
+        }
+
+        /* 改进的分页样式 */
+        .pagination {
+            margin: 30px 0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+
+        .pagination a {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .pagination a:hover {
+            background-color: #e9ecef;
+        }
+
+        .pagination .current {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+            cursor: default;
+        }
+
+        .pagination .ellipsis {
+            border: none;
+            background: transparent;
+            padding: 0 5px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .pagination {
+                gap: 6px;
+            }
+            .pagination a, .pagination span {
+                padding: 6px 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pagination {
+                flex-direction: row;
+                gap: 4px;
+            }
+            .pagination .ellipsis {
+                display: none;
+            }
+        }
+
+        /* 原有媒体查询保持不变 */
+        @media (max-width: 1200px) {
+            .container {
+                width: 90%;
+            }
+            .gallery {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            img.thumbnail {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                width: 95%;
+            }
+            .gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            img.thumbnail {
+                height: 160px;
+            }
+            .container {
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="gallery">
+            {% for entry in entries %}
+            <div class="item">
+                <img src="{{ entry.image_url }}"
+                     class="thumbnail"
+                     alt="{{ entry.prefix }}"
+                     onclick="window.location.href='/view/{{ entry.relative_path }}'">
+                <div style="
+                    margin-top: 10px;
+                    font-size: 0.9em;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    flex-grow: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    {{ entry.prefix[:15] }}{% if entry.prefix|length > 15 %}...{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="pagination">
+            {# 根据当前路径判断分页基础URL #}
+            {% if request.path.startswith('/categories/') %}
+                {% set base_url = '/categories/' + category_code %}
+            {% else %}
+                {% set base_url = '/' %}
+            {% endif %}
+
+            {% if page > 1 %}
+                <a href="{{ base_url }}?page={{ page - 1 }}">&laquo; 上一页</a>
+            {% endif %}
+
+            {% set start = [1, page-2]|max %}
+            {% set end = [total_pages, page+2]|min %}
+
+            {% if start > 1 %}
+                <a href="{{ base_url }}?page=1">1</a>
+                {% if start > 2 %}<span class="ellipsis">...</span>{% endif %}
+            {% endif %}
+
+            {% for p in range(start, end + 1) %}
+                {% if p == page %}
+                    <span class="current">{{ p }}</span>
+                {% else %}
+                    <a href="{{ base_url }}?page={{ p }}">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if end < total_pages %}
+                {% if end < total_pages - 1 %}<span class="ellipsis">...</span>{% endif %}
+                <a href="{{ base_url }}?page={{ total_pages }}">{{ total_pages }}</a>
+            {% endif %}
+
+            {% if page < total_pages %}
+                <a href="{{ base_url }}?page={{ page + 1 }}">下一页 &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!-- templates/console.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>下载控制台</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        /* 与index.html一致的背景和基础样式 */
+        body {
+            background: url("{{ url_for('static', filename='Background.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 85%;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 导航链接样式 */
+        .nav-links {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 控制台特定样式 */
+        #controls {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .option-group {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+        }
+
+        .hidden-options {
+            display: none;
+        }
+
+        /* 与index.html一致的按钮样式 */
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 输出区域样式 */
+        #output {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: Consolas, monospace;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .option-group {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航链接 -->
+        <div class="nav-links">
+            <a href="/" target="_blank" rel="noopener noreferrer">返回图库</a>
+        </div>
+
+        <div id="controls">
+            <div class="option-group">
+                <label><input type="radio" name="choice1" value="1" checked> 从获取ID开始</label>
+                <label><input type="radio" name="choice1" value="2"> 继续上次下载</label>
+            </div>
+
+            <div id="choice2Options" class="option-group">
+                <div class="hidden-options">
+                    <div>
+                        <label><input type="radio" name="choice2" value="1" checked> 中文+大于60页+无修正</label>
+                        <label><input type="radio" name="choice2" value="2"> 中文+无修正</label>
+                        <label><input type="radio" name="choice2" value="3"> 中文+大于100页</label>
+                        <label><input type="radio" name="choice2" value="4"> 自定义URL</label>
+                    </div>
+                    <div id="urlInput" style="display: none; margin-top: 10px;">
+                        <input type="text" name="url" placeholder="输入完整URL" style="width: 100%; padding: 8px;">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startTask()">开始任务</button>
+        </div>
+
+        <pre id="output">准备就绪...(任务过程中请不要刷新此页面，会导致控制台显示错误)</pre>
+    </div>
+
+    <script>
+        let pollingInterval = null;
+
+        function updateUI() {
+            const choice1Value = document.querySelector('input[name="choice1"]:checked').value;
+            const choice2Value = document.querySelector('input[name="choice2"]:checked')?.value;
+            const choice2Options = document.querySelector('#choice2Options .hidden-options');
+
+            // 处理选项显示逻辑
+            if (choice1Value === '1') {
+                choice2Options.style.display = 'block';
+                document.querySelectorAll('#choice2Options input').forEach(input => {
+                    input.disabled = false;
+                });
+            } else {
+                choice2Options.style.display = 'none';
+                document.querySelectorAll('#choice2Options input').forEach(input => {
+                    input.disabled = true;
+                });
+            }
+
+            // 处理URL输入显示
+            if (choice2Value === '4') {
+                document.getElementById('urlInput').style.display = 'block';
+            } else {
+                document.getElementById('urlInput').style.display = 'none';
+            }
+        }
+
+        function startTask() {
+            const formData = {
+                choice1: document.querySelector('input[name="choice1"]:checked').value,
+                choice2: document.querySelector('input[name="choice2"]:checked')?.value || '',
+                url: document.querySelector('input[name="url"]')?.value || ''
+            };
+
+            fetch('/console/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('错误: ' + data.error);
+                } else {
+                    if (pollingInterval) clearInterval(pollingInterval);
+                    pollingInterval = setInterval(fetchOutput, 1000);
+                }
+            })
+            .catch(console.error);
+        }
+
+        function fetchOutput() {
+            fetch('/console/output')
+                .then(response => response.json())
+                .then(data => {
+                    const outputElement = document.getElementById('output');
+                    outputElement.textContent = data.output;
+                    outputElement.scrollTop = outputElement.scrollHeight;
+                });
+        }
+
+        // 初始化事件监听
+        document.querySelectorAll('input[name="choice1"]').forEach(input => {
+            input.addEventListener('change', updateUI);
+        });
+
+        document.querySelectorAll('input[name="choice2"]').forEach(input => {
+            input.addEventListener('change', updateUI);
+        });
+
+        updateUI(); // 初始UI状态
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>图片浏览 - {{ category_name }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+         /* 原有样式保持不变 */
+        body {
+            background: url("{{ url_for('static', filename='Background.png') }}") no-repeat center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .prefix {
+            font-weight: bold;
+            font-size: 0.9em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .title {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+            min-height: 2.8em; /* 保持两行高度 */
+        }
+
+        .container {
+            width: 85%;
+            margin: 0 auto;
+            padding: 20px 0;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.9);
+            min-width: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        img.thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+            border: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        img.thumbnail:hover {
+            transform: scale(1.03);
+        }
+
+        .search-container {
+            padding: 0 20px;
+            margin: 20px auto 30px;
+            max-width: 800px;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 123, 255, 0.2);
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+            border-color: #007bff;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 25px;
+            border: none;
+            background: transparent;
+            font-size: 1.1em;
+            color: #333;
+            outline: none;
+            border-radius: 30px;
+        }
+
+        .search-input::placeholder {
+            color: #999;
+            font-weight: 300;
+        }
+
+        .search-btn {
+            width: 55px;
+            height: 55px;
+            border: none;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px;
+        }
+
+        .search-btn:hover {
+            background: #0056b3;
+            transform: scale(0.95);
+        }
+
+        .search-icon {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .pagination {
+            margin: 30px 0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+
+        .pagination a {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .pagination a:hover {
+            background-color: #e9ecef;
+        }
+
+        .pagination .current {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+            cursor: default;
+        }
+
+        .pagination .ellipsis {
+            border: none;
+            background: transparent;
+            padding: 0 5px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .pagination {
+                gap: 6px;
+            }
+            .pagination a, .pagination span {
+                padding: 6px 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pagination {
+                flex-direction: row;
+                gap: 4px;
+            }
+            .pagination .ellipsis {
+                display: none;
+            }
+        }
+
+        /* 原有媒体查询保持不变 */
+        @media (max-width: 1200px) {
+            .container {
+                width: 90%;
+            }
+            .gallery {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            img.thumbnail {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .category-nav {
+                margin: 20px 3%;
+                gap: 8px;
+            }
+            .category-nav a {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            .container {
+                width: 95%;
+            }
+            .gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .category-nav {
+                margin: 20px 2%;
+                padding: 12px;
+            }
+            .category-nav a {
+                padding: 8px 12px;
+            }
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            img.thumbnail {
+                height: 160px;
+            }
+            .container {
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-nav {
+                gap: 6px;
+                padding: 10px;
+                margin: 15px 2%;
+            }
+            .category-nav a {
+                padding: 6px 10px;
+                font-size: 0.85em;
+            }
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+        .category-nav {
+            text-align: center;
+            margin: 20px 5%;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* 新增flex布局 */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .category-nav a {
+            margin: 0; /* 移除原左右margin */
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            white-space: nowrap; /* 防止文字换行 */
+        }
+
+        .category-nav a.active {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .category-nav a:hover {
+            background-color: #0056b3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-title {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+        .random-btn {
+            background: linear-gradient(145deg, #6c5ce7, #a363d9) !important;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .random-btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 25%,
+                rgba(255,255,255,0.1) 50%,
+                transparent 75%
+            );
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .random-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(108,92,231,0.4);
+        }
+        .random-header {
+            margin: 20px 5%;  /* 与导航栏相同的外边距 */
+            width: calc(100% - 10%); /* 补偿左右5%的边距 */
+            max-width: none;  /* 移除之前的最大宽度限制 */
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;  /* 与导航栏相同的圆角 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  /* 相同的阴影效果 */
+            padding: 18px 25px;
+            border: 1px solid rgba(0, 123, 255, 0.15);
+            box-sizing: border-box; /* 确保padding不增加实际宽度 */
+        }
+
+        @media (max-width: 768px) {
+            .random-header {
+                margin: 15px 3%;  /* 与导航栏移动端边距同步 */
+                width: calc(100% - 6%);
+                padding: 15px;
+                border-radius: 6px;  /* 保持导航栏的圆角比例 */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .random-header {
+                margin: 15px 2%;
+                width: calc(100% - 4%);
+                border-radius: 5px;
+            }
+        }
+
+        .random-header-inner {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .refresh-icon {
+            width: 40px;
+            height: 40px;
+            background: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .refresh-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .refresh-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .refresh-text span {
+            color: #666;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #007bff !important;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .refresh-btn:hover {
+            color: #0056b3 !important;
+            border-bottom-color: rgba(0, 123, 255, 0.3);
+            gap: 12px;
+        }
+
+        .arrow-icon {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-btn:hover .arrow-icon {
+            transform: translateX(3px);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .random-header {
+                margin: 15px;
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            .refresh-icon {
+                width: 36px;
+                height: 36px;
+            }
+
+            .refresh-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .refresh-text span {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form action="/search" method="GET" class="search-container">
+            <div class="search-box">
+                <input type="text"
+                       name="q"
+                       value="{{ search_query | e if search_query else '' }}"
+                       placeholder="输入ID或标题..."
+                       class="search-input"
+                       aria-label="搜索框">
+                <button type="submit" class="search-btn">
+                    <svg class="search-icon" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+        {% if search_query %}
+            <div style="text-align: center; margin: 10px 0; color: #666;">
+                搜索关键词："{{ search_query | e }}"，共找到 {{ total_entries }} 个结果。
+            </div>
+        {% endif %}
+        <!-- 分类导航 -->
+        <div class="category-nav">
+            <a href="/console" target="_blank" rel="noopener noreferrer">下载控制台</a>
+            <a href="/categories/A" class="{% if category_code == 'A' %}active{% endif %}">A-Volume</a>
+            <a href="/categories/B" class="{% if category_code == 'B' %}active{% endif %}">B-Short</a>
+            <a href="/categories/C" class="{% if category_code == 'C' %}active{% endif %}">C-Doujin</a>
+            <a href="/" class="{% if not category_code %}active{% endif %}">展示全部</a>
+            <a href="/random" class="random-btn">
+                推荐
+            </a>
+        </div>
+
+
+        <div class="gallery">
+            {% for entry in entries %}
+            <div class="item">
+                <img src="{{ entry.image_url }}"
+                     class="thumbnail"
+                     alt="{{ entry.prefix }}"
+                     onclick="window.location.href='/view/{{ entry.relative_path }}'">
+                <div style="margin-top: auto; padding: 8px;">
+                    <div class="prefix" title="{{ entry.prefix }}">
+                        {{ entry.prefix[:15] }}{% if entry.prefix|length > 15 %}...{% endif %}
+                    </div>
+                    <div class="title" title="{{ entry.title }}">
+                        {% if entry.title != "undefined" %}
+                            {{ entry.title|truncate(25) }}
+                        {% else %}
+                            <span style="color: #999;">undefined</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if is_random %}
+            <div class="random-header">
+                <div class="random-header-inner">
+                    <div class="refresh-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>
+                        </svg>
+                    </div>
+                    <div class="refresh-text">
+                        <span>推荐已更新</span>
+                        <a href="/random" class="refresh-btn">
+                            立即刷新
+                            <svg viewBox="0 0 24 24" class="arrow-icon">
+                                <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- 分页链接 -->
+        {% if not is_random %}
+            <div class="pagination">
+                {% if page > 1 %}
+                    {% if search_query %}
+                        <a href="{{ url_for('search', q=search_query, page=page-1) }}">&laquo; 上一页</a>
+                    {% elif category_code %}
+                        <a href="{{ url_for('category_view', category_code=category_code, page=page-1) }}">&laquo; 上一页</a>
+                    {% else %}
+                        <a href="{{ url_for('index', page=page-1) }}">&laquo; 上一页</a>
+                    {% endif %}
+                {% endif %}
+
+                {% set start = [1, page-2]|max %}
+                {% set end = [total_pages, page+2]|min %}
+
+                {% if start > 1 %}
+                    {% if search_query %}
+                        <a href="{{ url_for('search', q=search_query, page=1) }}">1</a>
+                    {% elif category_code %}
+                        <a href="{{ url_for('category_view', category_code=category_code, page=1) }}">1</a>
+                    {% else %}
+                        <a href="{{ url_for('index', page=1) }}">1</a>
+                    {% endif %}
+                    {% if start > 2 %}<span class="ellipsis">...</span>{% endif %}
+                {% endif %}
+
+                {% for p in range(start, end + 1) %}
+                    {% if p == page %}
+                        <span class="current">{{ p }}</span>
+                    {% else %}
+                        {% if search_query %}
+                            <a href="{{ url_for('search', q=search_query, page=p) }}">{{ p }}</a>
+                        {% elif category_code %}
+                            <a href="{{ url_for('category_view', category_code=category_code, page=p) }}">{{ p }}</a>
+                        {% else %}
+                            <a href="{{ url_for('index', page=p) }}">{{ p }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if end < total_pages %}
+                    {% if end < total_pages - 1 %}<span class="ellipsis">...</span>{% endif %}
+                    {% if search_query %}
+                        <a href="{{ url_for('search', q=search_query, page=total_pages) }}">{{ total_pages }}</a>
+                    {% elif category_code %}
+                        <a href="{{ url_for('category_view', category_code=category_code, page=total_pages) }}">{{ total_pages }}</a>
+                    {% else %}
+                        <a href="{{ url_for('index', page=total_pages) }}">{{ total_pages }}</a>
+                    {% endif %}
+                {% endif %}
+
+                {% if page < total_pages %}
+                    {% if search_query %}
+                        <a href="{{ url_for('search', q=search_query, page=page+1) }}">下一页 &raquo;</a>
+                    {% elif category_code %}
+                        <a href="{{ url_for('category_view', category_code=category_code, page=page+1) }}">下一页 &raquo;</a>
+                    {% else %}
+                        <a href="{{ url_for('index', page=page+1) }}">下一页 &raquo;</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+requests~=2.32.3
+pillow~=11.2.1
+Flask~=3.1.0
+beautifulsoup4~=4.13.4
+playwright~=1.52.0

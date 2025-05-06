@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>详细视图 - {{ folder_path }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            z-index: -1;
+        }
+        .back-btn {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 100;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+        h2 {
+            margin: 20px 0;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .comic-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .comic-page {
+            width: 40%;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .comic-page img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 768px) {
+            .comic-page {
+                width: 60%;
+                padding: 10px;
+            }
+            .comic-page img {
+                max-width: 60%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.history.back()">返回</button>
+    <h2>当前观看：{{ folder_path }}</h2>
+    <div class="comic-container">
+        {% for img in images %}
+        <div class="comic-page">
+            <img src="{{ img.url }}" alt="{{ img.name }}">
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

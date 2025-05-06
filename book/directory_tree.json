@@ -1,0 +1,81 @@
+{
+  "metadata": {
+    "generated_at": "2025-05-06T13:21:03.148080",
+    "total_categories": 3,
+    "total_entries": 6
+  },
+  "data": {
+    "A-Volume": [
+      {
+        "category": "A-Volume",
+        "id": "10003",
+        "prefix": "AB10003",
+        "relative_path": "A-Volume\\B-color\\10003",
+        "title": "示例4",
+        "tags": [
+          "190"
+        ],
+        "pdf_exists": false
+      },
+      {
+        "category": "A-Volume",
+        "id": "10004",
+        "prefix": "AA10004",
+        "relative_path": "A-Volume\\A-Monochrome\\10004",
+        "title": "示例5",
+        "tags": [
+          "190"
+        ],
+        "pdf_exists": false
+      }
+    ],
+    "B-Short": [
+      {
+        "category": "B-Short",
+        "id": "10000",
+        "prefix": "BB10000",
+        "relative_path": "B-Short\\B-color\\10000",
+        "title": "示例1",
+        "tags": [
+          "190"
+        ],
+        "pdf_exists": false
+      },
+      {
+        "category": "B-Short",
+        "id": "10001",
+        "prefix": "BA10001",
+        "relative_path": "B-Short\\A-Monochrome\\10001",
+        "title": "示例2",
+        "tags": [
+          "190"
+        ],
+        "pdf_exists": false
+      }
+    ],
+    "C-Doujin": [
+      {
+        "category": "C-Doujin",
+        "id": "10005",
+        "prefix": "CA10005",
+        "relative_path": "C-Doujin\\A-Monochrome\\10005",
+        "title": "示例6",
+        "tags": [
+          "190"
+        ],
+        "pdf_exists": false
+      },
+      {
+        "category": "C-Doujin",
+        "id": "10006",
+        "prefix": "CB10006",
+        "relative_path": "C-Doujin\\B-color\\10006",
+        "title": "示例7",
+        "tags": [
+          "190"
+        ],
+        "pdf_exists": false
+      }
+    ]
+  }
+}
