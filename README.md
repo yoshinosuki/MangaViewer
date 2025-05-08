@@ -13,7 +13,7 @@
 ![clip_20250505_211817](img/README/clip_20250505_211817.jpg)
 
 ### 1.1 更新
-### 修改了控制台构造连接的逻辑。
+### 修改了控制台构造链接的逻辑。
 ![clip_20250508_211927](img/README/clip_20250508_211927.jpg)
 
 ## 功能特性
@@ -46,9 +46,9 @@
 ### ⚙️小工具
 
 - 支持批量将漫画导出pdf
-- 支持简单的自动分类
-- 支持powershell启动，已提供示例
-- 支持断点续传
+- 支持自动分类
+- 支持powershell启动
+
 
 ## 技术栈
 
@@ -80,7 +80,6 @@ graph TD
 - **安全机制**
   - 路径消毒 (`unquote`)
   - 端口冲突检测 (`socket.bind`)
-  - 输入验证 (`re.compile(r'^\d+$')`)
 
 ## 使用说明
 
@@ -111,6 +110,7 @@ graph TD
 ### 启动
 
 1. 建议从MangaViewer.ps1启动。
+
 ```bash
 # python启动
 python get_images.py
@@ -144,6 +144,12 @@ python convertlowpdf.py
 # # 第二阶段：自动分类
 # 这里取决与用户是否决定要开启自动分类
 # commands.append([pythonExe, os.path.join(scriptPath, 'classify.py')])
+```
+
+6. 在console.html中可以管理要选择和使用的tag标签。
+
+```html
+<label><input type="checkbox" name="tag" value="full-color"> full-color</label>
 ```
 
 ## 接口文档
