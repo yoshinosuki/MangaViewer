@@ -3,6 +3,7 @@ import os
 import json
 import glob
 from PIL import Image
+from tree_book import tree_book
 
 from config import root_dir, json_path
 
@@ -148,6 +149,7 @@ def main():
 
 
 if __name__ == '__main__':
+    # tree_book()
     # main()
 
     data_path = os.getenv("DATA_PATH", id_json_path)
@@ -157,5 +159,6 @@ if __name__ == '__main__':
         time_window=datetime.timedelta(minutes=5)
     ):
         print("检测到需要更新数据，开始收集")
+        tree_book()
         main()
         print('数据更新完毕')
