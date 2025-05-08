@@ -82,7 +82,7 @@ graph TD
 
 ### 配置示例
 
-```python
+```json
 {
     "root_dir": "book",
     "json_path": "book/directory_tree.json",
@@ -107,7 +107,6 @@ graph TD
 ### 启动
 
 1. 建议从MangaViewer.ps1启动。
-
 ```bash
 # python启动
 python get_images.py
