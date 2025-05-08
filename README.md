@@ -4,15 +4,13 @@
 
 本项目是一个基于Flask框架的漫画资源管理Web应用，提供完整的资源展示、分类浏览和自动化任务执行功能。系统支持从指定数据源自动获取、下载、整理漫画资源，并通过可视化界面进行高效管理。
 
-<img src="img/README/clip_20250505_212510.png" alt="clip_20250505_212510" style="zoom:25%;" />
+![clip_20250505_212510](img/README/clip_20250505_212510.jpg)
 
-<img src="img/README/clip_20250505_222621.png" alt="clip_20250505_222621" style="zoom:25%;" />
+![clip_20250505_222621](img/README/clip_20250505_222621.jpg)
 
-<img src="img/README/clip_20250505_211817.png" alt="clip_20250505_211817" style="zoom:25%;" />
+![clip_20250505_211701](img/README/clip_20250505_211701.jpg)
 
-<img src="img/README/clip_20250505_211701.png" alt="clip_20250505_211701" style="zoom:25%;" />
-
-<img src="img/README/clip_20250505_211817.png" alt="clip_20250505_211817" style="zoom:25%;" />
+![clip_20250505_211817](img/README/clip_20250505_211817.jpg)
 
 ## 功能特性
 
