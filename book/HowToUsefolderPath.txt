@@ -1,0 +1,5 @@
+A-Volume：长系列
+B-Short ：短系列
+C-Doujin：放很短或不太喜欢的
+D-Serial：收藏
+wait：默认下载
