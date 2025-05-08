@@ -1,20 +1,11 @@
 # MangaViewer
+[![Flask](https://img.shields.io/badge/Flask-2.0.1+-blue?logo=flask)](https://flask.palletsprojects.com/)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## 项目概述
 
 本项目是一个基于Flask框架的漫画资源管理Web应用，提供完整的资源展示、分类浏览和自动化任务执行功能。系统支持从指定数据源自动获取、下载、整理漫画资源，并通过可视化界面进行高效管理。
-
-![clip_20250505_212510](img/README/clip_20250505_212510.jpg)
-
-![clip_20250505_222621](img/README/clip_20250505_222621.jpg)
-
-![clip_20250505_211701](img/README/clip_20250505_211701.jpg)
-
-![clip_20250505_211817](img/README/clip_20250505_211817.jpg)
-
-### 1.1 更新
-### 修改了控制台构造链接的逻辑。
-![clip_20250508_211927](img/README/clip_20250508_211927.jpg)
 
 ## 功能特性
 
@@ -51,12 +42,6 @@
 
 
 ## 技术栈
-
-**框架**  
-[![Flask](https://img.shields.io/badge/Flask-2.0.1+-blue?logo=flask)](https://flask.palletsprojects.com/)
-[![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
 ### 系统设计
 
 ```mermaid
@@ -81,9 +66,9 @@ graph TD
   - 路径消毒 (`unquote`)
   - 端口冲突检测 (`socket.bind`)
 
-## 使用说明
+## 🚀 快速入门
 
-### 配置示例
+### ⚙️配置示例
 
 ```json
 {
@@ -101,15 +86,49 @@ graph TD
 ```
 至少还需要配置"python_executable"才可运行
 
-### 分类示例
+### ⚙️分类示例
+可以取消注释代码来运行自动分类的功能，自动分类的功能较为简陋。
 
-以下为个人使用示例：
+```python
+# app.py
+# 这里取决与用户是否决定要开启自动分类
+# commands.append([pythonExe, os.path.join(scriptPath, 'classify.py')])
+```
+```txt
+作者自用：
+r'Book\A-Volume\A-Detailed',
+r'Book\A-Volume\B-Average',
+r'Book\A-Volume\C-Censored',
+r'Book\A-Volume\D-Borderline',
+r'Book\A-Volume\E-Color',
+r'Book\A-Volume\F-Scanned',
+r'Book\B-Short\A-Monochrome',
+r'Book\B-Short\B-color',
+r'Book\C-Doujin\A-Monochrome',
+r'Book\C-Doujin\B-Color',
+r'Book\C-Doujin\C-Extreme',
+r'Book\C-Doujin\D-LGBTQ'
+```
 
-<img src="img/README/root_dir_example.png" alt="root_dir_example" style="zoom:50%;" />
+### ⚙️启动
 
-### 启动
+1. 确保playwright以及对应依赖运行正常，requirements.txt依赖正常安装。
 
-1. 建议从MangaViewer.ps1启动。
+```bash
+# 克隆项目
+git clone https://github.com/yoshinosuki/MangaViewer.git
+cd MangaViewer
+
+# 安装依赖
+pip install -r requirements.txt
+playwright install
+```
+
+2. 项目中提供了两种启动的方式。
+```bash
+# powershell启动
+./MangaViewer.ps1
+```
 
 ```bash
 # python启动
@@ -117,38 +136,26 @@ python get_images.py
 python app.py
 # 访问地址：`http://localhost:5002`
 ```
-2. 确保playwright以及对应依赖运行正常，requirements.txt依赖正常安装。
-
-```bash
-playwright install
-pip install -r requirements.txt
-```
 
 3. 控制台下载任务默认最新5页。
 
 ```python
-all_page_num = 6 
-# 在get_id_new.py中修改，实际为6-1=5
+# get_id_new.py
+page_num = 5  
+# 控制台下载任务默认最新page_num页,最小为1
 ```
 
-4. 可以配置导出漫画的pdf。
+4. 可以配置config来导出漫画的pdf。
 
 ```bash
 python convertlowpdf.py
-# 在config.json配置输出位置，压缩参数默认为20
+# 在config.json配置输出，压缩参数默认为20
 ```
 
-5. 在app.py中自带一个简单的分类脚本示例，可以取消注释代码来运行自动分类。
-
-```python
-# # 第二阶段：自动分类
-# 这里取决与用户是否决定要开启自动分类
-# commands.append([pythonExe, os.path.join(scriptPath, 'classify.py')])
-```
-
-6. 在console.html中可以管理要选择和使用的tag标签。
+5. 可以管理下载所使用的自定义tag标签。
 
 ```html
+# console.html
 <label><input type="checkbox" name="tag" value="full-color"> full-color</label>
 ```
 
@@ -177,6 +184,26 @@ python convertlowpdf.py
 - index.html: 通用列表模板（支持主界面/分类/搜索/随机等多种场景）
 - viewer.html: 漫画阅读器模板（支持图片懒加载和排序显示）
 - console.html: 任务控制台模板（实时显示执行日志和进度）
+
+## 更新日志
+
+### [1.1.0] - 2024-05-08
+- 修改了控制台构造链接的逻辑。
+
+![clip_20250508_211927](img/README/clip_20250508_211927.jpg)
+
+
+### [1.0.0] - 2024-05-05
+- 初版本功能快照
+
+![clip_20250505_212510](img/README/clip_20250505_212510.jpg)
+
+![clip_20250505_222621](img/README/clip_20250505_222621.jpg)
+
+![clip_20250505_211701](img/README/clip_20250505_211701.jpg)
+
+![clip_20250505_211817](img/README/clip_20250505_211817.jpg)
+
 
 ## 🤝 贡献指南
 
