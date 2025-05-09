@@ -98,7 +98,8 @@ if __name__ == '__main__':
     data_path = os.getenv("DATA_PATH", id_json_path)
     if check_flag():
         print("检测到需要更新数据，开始收集")
-        move_folders()
+        # 这里取决与用户是否决定要开启自动分类
+        # move_folders()
         tree_book()
         main()
         print('数据更新完毕')

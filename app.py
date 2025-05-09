@@ -122,15 +122,15 @@ def start_task():
 
             print(f"构造好的url为：{url_param}", flush=True)
 
-            # # 第二阶段：自动分类
-            # 这里取决与用户是否决定要开启自动分类，默认启动应用时会检测是否获取封面图片
-            # commands.append([pythonExe, os.path.join(scriptPath, 'classify.py')])
+            # # 第二阶段：保留接口设定
+            # commands.append([pythonExe, os.path.join(scriptPath, 'xxx.py')])
 
         elif choice1 == '2':
             # 继续下载模式
             commands = [
                 [pythonExe, os.path.join(scriptPath, 'download.py')],
-                # [pythonExe, os.path.join(scriptPath, 'classify.py')]
+                # # 第二阶段：保留接口设定
+                # [pythonExe, os.path.join(scriptPath, 'xxx.py')]
             ]
 
     except Exception as e:

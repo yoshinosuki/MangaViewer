@@ -90,9 +90,9 @@ graph TD
 可以取消注释代码来运行自动分类的功能，自动分类的功能较为简陋。
 
 ```python
-# app.py
+# pre_start.py
 # 这里取决与用户是否决定要开启自动分类
-# commands.append([pythonExe, os.path.join(scriptPath, 'classify.py')])
+# move_folders()
 ```
 ```txt
 作者自用：
