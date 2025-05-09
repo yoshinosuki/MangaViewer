@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 import json
 from playwright.sync_api import sync_playwright
 
-page_num = 5  # 控制台下载任务默认最新page_num页,最小为1
+get_page_num = 5  # 控制台下载任务默认最新get_page_num页,最小为1
 
-all_page_num = page_num + 1
+all_page_num = get_page_num + 1
 
 
 def parse_html(html_text):

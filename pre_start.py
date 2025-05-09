@@ -4,7 +4,7 @@ import json
 import glob
 from PIL import Image
 from tree_book import tree_book
-
+from classify import move_folders
 from config import root_dir, json_path
 
 # 配置
@@ -13,69 +13,12 @@ dest_dir = r'.\static\images'
 quality = 20
 
 
-def check_data_status(path, mode="recent", ref_time=None, time_window=None):
-    """
-    检测文件/文件夹是否为最新版本
-
-    参数:
-    path (str): 文件或文件夹路径
-    mode (str): 检测模式 ["recent"检查近期更新 | "reference"对比参考时间]
-    ref_time (datetime/float): 参考时间（mode=reference时必需）
-    time_window (timedelta): 时间窗口（mode=recent时必需）
-
-    返回:
-    str: True 或 False
-    """
-
-    def check_file(file_path):
-        """单个文件的检测逻辑"""
-        try:
-            mod_time = os.path.getmtime(file_path)
-            if mode == "recent":
-                return (datetime.datetime.now().timestamp() - mod_time) <= time_window.total_seconds()
-            return mod_time >= (ref_time.timestamp() if isinstance(ref_time, datetime.datetime) else ref_time)
-        except Exception:
-            return False
-
-    # 参数验证
-    if not os.path.exists(path):
-        return False
-    if mode not in ["recent", "reference"]:
-        raise ValueError("检测模式错误，支持 'recent' 或 'reference'")
-    if mode == "recent" and not time_window:
-        raise ValueError("近期检测模式需要 time_window 参数")
-    if mode == "reference" and not ref_time:
-        raise ValueError("参考时间检测模式需要 ref_time 参数")
-
-    # 文件检测
-    if os.path.isfile(path):
-        return True if check_file(path) else False
-
-    # 文件夹检测
-    has_qualified = False  # 近期模式使用
-    all_qualified = True  # 参考时间模式使用
-
-    for root, _, files in os.walk(path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            status = check_file(file_path)
-
-            if mode == "recent":
-                if status:
-                    has_qualified = True
-                    break  # 发现符合条件的立即终止
-            else:
-                if not status:
-                    all_qualified = False
-                    break  # 发现不符合条件的立即终止
-
-        # 根据检测模式提前终止遍历
-        if (mode == "recent" and has_qualified) or (mode == "reference" and not all_qualified):
-            break
-
-    if mode == "recent":
-        return True if has_qualified else False
-    return True if all_qualified else False
+def check_flag(filename='flag'):
+    """检测并删除flag文件"""
+    if os.path.exists(filename):
+        os.remove(filename)
+        return True
+    return False
 
 
 def convert_to_jpg(source_path, dest_path):
@@ -153,12 +96,9 @@ if __name__ == '__main__':
     # main()
 
     data_path = os.getenv("DATA_PATH", id_json_path)
-    if check_data_status(
-        data_path,
-        mode="recent",
-        time_window=datetime.timedelta(minutes=5)
-    ):
+    if check_flag():
         print("检测到需要更新数据，开始收集")
+        move_folders()
         tree_book()
         main()
         print('数据更新完毕')

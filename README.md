@@ -132,7 +132,7 @@ playwright install
 
 ```bash
 # python启动
-python get_images.py
+python pre_start.py
 python app.py
 # 访问地址：`http://localhost:5002`
 ```
@@ -141,21 +141,21 @@ python app.py
 
 ```python
 # get_id_new.py
-page_num = 5  
-# 控制台下载任务默认最新page_num页,最小为1
+get_page_num = 5  
+# 控制台下载任务默认最新get_page_num页,最小为1
 ```
 
-4. 可以配置config来导出漫画的pdf。
+4. 项目提供了批量导出漫画pdf的方式。
 
 ```bash
 python convertlowpdf.py
 # 在config.json配置输出，压缩参数默认为20
 ```
 
-5. 可以管理下载所使用的自定义tag标签。
+5. 项目中提供了可设定的自定义tag标签。
 
 ```html
-# console.html
+<!-- console.html -->
 <label><input type="checkbox" name="tag" value="full-color"> full-color</label>
 ```
 

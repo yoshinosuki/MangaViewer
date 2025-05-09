@@ -23,8 +23,8 @@ $env:PYTHONUNBUFFERED = '1'
 $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUTF8 = "1"
 
-# 1. 检查是否需要更新图片
-& $pythonExe get_images.py
+# 1. 检查是否需要更新
+& $pythonExe pre_start.py
 
 # 2. 启动Flask服务（带配置参数）
 Start-Process $pythonExe -ArgumentList "app.py", "--host", $config.app_host, "--port", $config.app_port -NoNewWindow

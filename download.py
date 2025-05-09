@@ -57,7 +57,14 @@ def main():
     print("下载完成，下载记录已保存")
 
 
+def create_flag(filename='flag'):
+    """生成flag文件"""
+    with open(filename, 'w') as f:
+        pass
+
+
 if __name__ == '__main__':
     print("当前工作目录:", os.getcwd())
     if test_web():
         main()
+        create_flag()
