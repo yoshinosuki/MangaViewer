@@ -3,6 +3,7 @@
 
 # 获取配置文件路径（假设与脚本同目录）
 $configPath = Join-Path $PSScriptRoot "config.json"
+$script_path = $PSScriptRoot
 
 # 检查配置文件是否存在
 if (-not (Test-Path $configPath)) {
@@ -14,11 +15,11 @@ if (-not (Test-Path $configPath)) {
 $config = Get-Content $configPath -Raw | ConvertFrom-Json
 
 # 设置工作目录
-Set-Location $config.script_path
+Set-Location $script_path
 
 # 设置Python环境
 $pythonExe = $config.python_executable
-$env:PYTHONPATH = $config.script_path
+$env:PYTHONPATH = $script_path
 $env:PYTHONUNBUFFERED = '1'
 $env:PYTHONIOENCODING = "utf-8"
 $env:PYTHONUTF8 = "1"
