@@ -75,7 +75,6 @@ graph TD
 {
     "root_dir": "book",
     "json_path": "book/directory_tree.json",
-    "script_path": "",
     "python_executable": "your/python/path",
     "app_host": "0.0.0.0",
     "app_port": "5002",
@@ -202,19 +201,19 @@ r'Book\C-Doujin\D-LGBTQ'
 - 修改了控制台构造链接的逻辑。
 - 修改了自动更新的逻辑。
 
-![clip_20250508_211927](img/README/clip_20250508_211927.jpg)
+![clip_20250508_211927](static/README/clip_20250508_211927.jpg)
 
 
 ### [1.0.0] - 2024-05-05
 - 初版本功能快照
 
-![clip_20250505_212510](img/README/clip_20250505_212510.jpg)
+![clip_20250505_212510](static/README/clip_20250505_212510.jpg)
 
-![clip_20250505_222621](img/README/clip_20250505_222621.jpg)
+![clip_20250505_222621](static/README/clip_20250505_222621.jpg)
 
-![clip_20250505_211701](img/README/clip_20250505_211701.jpg)
+![clip_20250505_211701](static/README/clip_20250505_211701.jpg)
 
-![clip_20250505_211817](img/README/clip_20250505_211817.jpg)
+![clip_20250505_211817](static/README/clip_20250505_211817.jpg)
 
 
 ## 🤝 贡献指南

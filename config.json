@@ -1,7 +1,6 @@
 {
     "root_dir": "book",
     "json_path": "book/directory_tree.json",
-    "script_path": "",
     "python_executable": "E:/Code/Python/work/lyrics-embed/.venv/Scripts/python.exe",
     "app_host": "0.0.0.0",
     "app_port": "5002",

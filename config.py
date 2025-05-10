@@ -15,16 +15,11 @@ try:
     json_path = os.path.normpath(config["json_path"])
     downloadPdfPath = os.path.normpath(config["downloadPdfPath"])
     pdf_folders = [os.path.normpath(p) for p in config["pdf_folders"]]
-    scriptPath = os.path.normpath(config["script_path"])
     pythonExe = os.path.normpath(config["python_executable"])
     app_host = os.path.normpath(config["app_host"])
     app_port = os.path.normpath(config["app_port"])
 
-    raw_script_path = config["script_path"]
-    scriptPath = os.path.normpath(
-        raw_script_path if raw_script_path.strip() != ""
-        else os.path.dirname(os.path.abspath(__file__))
-    )
+    scriptPath = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
 
 
 except FileNotFoundError:
