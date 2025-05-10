@@ -87,14 +87,14 @@ graph TD
 至少还需要配置"python_executable"才可运行
 
 ### ⚙️分类示例
-可以取消注释代码来运行自动分类的功能，自动分类的功能较为简陋。
+可以注释代码来取消运行自动分类的功能，自动分类的功能较为简陋。
 
-```python
+```text
 # pre_start.py
 # 这里取决与用户是否决定要开启自动分类
-# move_folders()
+move_folders()
 ```
-```txt
+```text
 作者自用：
 r'Book\A-Volume\A-Detailed',
 r'Book\A-Volume\B-Average',
@@ -189,6 +189,7 @@ python convertlowpdf.py
 
 ### [1.1.0] - 2024-05-08
 - 修改了控制台构造链接的逻辑。
+- 修改了自动更新的逻辑。
 
 ![clip_20250508_211927](img/README/clip_20250508_211927.jpg)
 
