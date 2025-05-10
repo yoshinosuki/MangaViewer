@@ -86,30 +86,6 @@ graph TD
 ```
 至少还需要配置"python_executable"才可运行
 
-### ⚙️分类示例
-可以注释代码来取消运行自动分类的功能，自动分类的功能较为简陋。
-
-```text
-# pre_start.py
-# 这里取决与用户是否决定要开启自动分类
-move_folders()
-```
-```text
-作者自用：
-r'Book\A-Volume\A-Detailed',
-r'Book\A-Volume\B-Average',
-r'Book\A-Volume\C-Censored',
-r'Book\A-Volume\D-Borderline',
-r'Book\A-Volume\E-Color',
-r'Book\A-Volume\F-Scanned',
-r'Book\B-Short\A-Monochrome',
-r'Book\B-Short\B-color',
-r'Book\C-Doujin\A-Monochrome',
-r'Book\C-Doujin\B-Color',
-r'Book\C-Doujin\C-Extreme',
-r'Book\C-Doujin\D-LGBTQ'
-```
-
 ### ⚙️启动
 
 1. 确保playwright以及对应依赖运行正常，requirements.txt依赖正常安装。
@@ -158,6 +134,40 @@ python convertlowpdf.py
 <!-- console.html -->
 <label><input type="checkbox" name="tag" value="full-color"> full-color</label>
 ```
+
+### ⚙️分类示例
+可以注释代码来取消运行自动分类的功能，自动分类的功能较为简陋。
+
+```text
+# pre_start.py
+# 这里取决与用户是否决定要开启自动分类
+move_folders()
+```
+```text
+自动分类的结构
+r'Book\A-Volume\A-Monochrome',
+r'Book\A-Volume\B-color',
+r'Book\B-Short\A-Monochrome',
+r'Book\B-Short\B-color',
+r'Book\C-Doujin\A-Monochrome',
+r'Book\C-Doujin\B-Color',
+```
+```text
+作者自用：
+r'Book\A-Volume\A-Detailed',
+r'Book\A-Volume\B-Average',
+r'Book\A-Volume\C-Censored',
+r'Book\A-Volume\D-Borderline',
+r'Book\A-Volume\E-Color',
+r'Book\A-Volume\F-Scanned',
+r'Book\B-Short\A-Monochrome',
+r'Book\B-Short\B-color',
+r'Book\C-Doujin\A-Monochrome',
+r'Book\C-Doujin\B-Color',
+r'Book\C-Doujin\C-Extreme',
+r'Book\C-Doujin\D-LGBTQ'
+```
+
 
 ## 接口文档
 
