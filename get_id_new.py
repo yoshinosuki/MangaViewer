@@ -90,7 +90,7 @@ def save_data(data, base_path='./list'):
 
     try:
         # 写入TXT文件
-        with open(txt_path, 'w', encoding='utf-8', errors='replace') as f_txt:
+        with open(txt_path, 'a', encoding='utf-8', errors='replace') as f_txt:
             for item in data:
                 f_txt.write(f"{item['id']}\n")
 
@@ -147,6 +147,14 @@ def validate_json(file_path):
                 raise ValueError("数据字段缺失")
 
 
+def clear_id_new():
+    base_path = './list'
+    os.makedirs(base_path, exist_ok=True)
+    txt_path = os.path.join(base_path, 'id_new.txt')
+    with open(txt_path, 'w')as file:
+        pass
+
+
 def main(url_prefix):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -156,7 +164,7 @@ def main(url_prefix):
 
         for page_num in range(1, all_page_num):
             url = f"{url_prefix}{page_num}"
-            print(f"正在处理第{page_num}页")
+            print(f"正在处理{url_prefix}{page_num}")
             try:
                 html = get_html(page, url)
                 page_data = parse_html(html)
@@ -250,6 +258,7 @@ def test_web():
 
 if __name__ == '__main__':
     if test_web():
+        clear_id_new()
         parser = argparse.ArgumentParser(description='URLs.')
         parser.add_argument('url', type=str, nargs='?',
                             default='https://nhentai.net/search/?q=uncensored&page=',
