@@ -128,7 +128,7 @@ python convertlowpdf.py
 # 在config.json配置输出，压缩参数默认为20
 ```
 
-5. 项目中提供了可设定的自定义tag标签。
+5. 项目提供了自定义tag标签。
 
 ```html
 <!-- console.html -->
