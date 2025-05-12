@@ -1,9 +1,12 @@
 import subprocess
 import os
+import re
 from concurrent.futures import ThreadPoolExecutor
 import sys
 import requests
 from config import download_book_path
+
+check_path = download_book_path
 
 
 def test_web():
@@ -45,6 +48,81 @@ def run_script(script):
         return process.returncode
 
 
+def check_continuous_sequence(numbers):
+    """分析数字序列连续性"""
+    if not numbers:
+        return True, []
+
+    expected = 1
+    missing = []
+
+    # 必须从1开始
+    if numbers[0] != 1:
+        missing.extend(range(1, numbers[0]))
+
+    # 检测中间断档
+    for num in numbers:
+        if num > expected:
+            missing.extend(range(expected, num))
+            expected = num
+        expected += 1
+
+    return (len(missing) == 0), missing
+
+
+def validate_image_files(directory):
+    """校验目录中的图片文件命名合规性"""
+    valid_numbers = []
+    has_invalid = False
+    img_exts = {'.jpg', '.png', '.webp'}
+
+    for filename in os.listdir(directory):
+        # 分割文件名与扩展名
+        base, ext = os.path.splitext(filename)
+        ext = ext.lower()
+
+        if ext not in img_exts:
+            continue  # 忽略非图片文件
+
+        # 使用正则表达式校验纯数字文件名
+        if re.fullmatch(r'^\d+$', base):
+            valid_numbers.append(int(base))
+        else:
+            has_invalid = True
+
+    return sorted(valid_numbers), has_invalid
+
+
+def find_leaf_directories(root_dir):
+    """深度优先搜索获取末级目录列表"""
+    leaf_dirs = []
+    for root, dirs, _ in os.walk(root_dir):
+        if not dirs:  # 无子目录时判定为末级
+            leaf_dirs.append(root)
+    return leaf_dirs
+
+
+def process_directory(target_dir):
+    """处理单个目录的检测流程"""
+    valid_numbers, has_invalid = validate_image_files(target_dir)
+
+    # 打印非法文件名告警
+    if has_invalid:
+        print(f"[WARN] 非法文件名 {target_dir}")
+
+    # 执行连续性检测
+    if valid_numbers:
+        is_continuous, missing = check_continuous_sequence(valid_numbers)
+        if not is_continuous:
+            print(f"[ERROR] 编号不连续 {target_dir}")
+            print(f"缺失编号：{missing}")
+
+
+def continuity_check():
+    for leaf in find_leaf_directories(check_path):
+        process_directory(leaf)
+
+
 def main():
     print("开始下载进程")
     os.makedirs(download_book_path, exist_ok=True)
@@ -68,3 +146,4 @@ if __name__ == '__main__':
     if test_web():
         main()
         create_flag()
+        continuity_check()
