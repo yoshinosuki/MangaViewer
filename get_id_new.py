@@ -60,24 +60,28 @@ def parse_html(html_text):
 
 
 def get_html(page, url, max_retries=3):
-    """
-    增强型页面获取函数
-    新增功能：
-    1. 自动重试机制
-    2. 随机延迟防止封禁
-    3. 网络状态监控
-    """
     for attempt in range(max_retries):
         try:
-            page.goto(url, timeout=60000)
+            # 设置浏览器头防止封禁
+            page.set_extra_http_headers({
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+                "Accept-Language": "en-US,en;q=0.9"
+            })
+
+            # 关键改进：等待网络空闲+显式等待目标元素
+            page.goto(url, wait_until="networkidle", timeout=60000)  # 改为networkidle
+            page.wait_for_selector("div.gallery", state="attached", timeout=30000)  # 显式等待
+
+            # 额外检测内容是否可见
             if page.locator('div.gallery').count() > 0:
                 return page.content()
             else:
-                print(f"第{attempt + 1}次重试：页面元素未加载成功")
-                time.sleep(random.uniform(2, 5))
+                print(f"第{attempt + 1}次重试：元素存在但不可见")
+                time.sleep(random.uniform(3, 8))
+
         except Exception as e:
             print(f"请求异常：{str(e)}")
-            time.sleep(attempt * 5)  # 指数退避
+            time.sleep(attempt * 5 + random.uniform(2, 4))  # 增加随机抖动
 
     raise Exception(f"请求失败：{url}")
 
