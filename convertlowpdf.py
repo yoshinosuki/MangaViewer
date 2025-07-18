@@ -4,12 +4,12 @@ from PIL import Image, ImageFile
 import gc
 import datetime
 import shutil
-from config import json_path, downloadPdfPath, download_book_path
+from config import json_path, downloadPdfPath, root_dir
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # 配置
-base_folder_paths = [download_book_path]
+base_folder_paths = [root_dir]
 temp_folder = r'..\book\temp'
 quality = 20
 
@@ -24,15 +24,17 @@ def read_json_config(json_path):
             # 遍历所有分类条目
             for category, items in data['data'].items():
                 for item in items:
-                    # 路径处理
-                    path_segments = item['relative_path'].split('\\')
-                    folder_name = path_segments[-1]  # 获取最底层文件夹名
+                    # 使用os.path处理路径兼容性
+                    relative_path = item['relative_path']
+                    folder_name = os.path.basename(os.path.normpath(relative_path))
 
                     # 生成配置策略
                     config[folder_name] = {
-                        'need_generate': not item['pdf_exists'],  # 核心逻辑：pdf_exists为False时需要生成
-                        'pdf_name': item['prefix']  # prefix + id:AA3285812
+                        'need_generate': not item['pdf_exists'],
+                        'pdf_name': item['prefix']
                     }
+        # 调试：打印生成的配置
+        print("Loaded PDF Config:", json.dumps(config, indent=2, ensure_ascii=False))
         return config
 
     except Exception as e:
@@ -192,6 +194,7 @@ def batch_convert(base_paths):
         for root, dirs, _ in os.walk(base):
             for dir_name in dirs:
                 folder_path = os.path.join(root, dir_name)
+                print(f"处理文件夹: {folder_path}")  # 调试信息
                 generate_pdf(folder_path, error_log)
 
     # 保存错误日志
